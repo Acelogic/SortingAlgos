@@ -1,6 +1,3 @@
-import jdk.swing.interop.SwingInterOpUtils;
-
-import java.io.IOException;
 import java.util.*;
 
 /*
@@ -128,20 +125,14 @@ public class Sorter {
 
     }
 
-
+    // Counting Sort
     public int[] countingSort(int[] data) {
-        int[] counts = new int[10]; // Counting Array
+        int[] counts = new int[data.length]; // Counting Array
 
-        // Counting occurrences of numbers in array from 0 to 9 and storing them
+        // Counting occurrences of numbers in array from 0 to n and storing them
         for (int num : data) {
             counts[num] = counts[num] + 1;
         }
-
-        /*System.out.println("Data:   " + Arrays.toString(data));
-        System.out.println("        -------------------------------");
-        System.out.println("Counts: " + Arrays.toString(counts));
-        System.out.println("Places:  0  1  2  3  4  5  6  7  8  9");
-        System.out.println("        -------------------------------");*/
 
         // Builds sorting array
         ArrayList<Integer> sorted = new ArrayList<>();
@@ -162,38 +153,76 @@ public class Sorter {
 
     }
 
-    public static void main(String[] args) throws IOException {
-        CSVReader r = new CSVReader();
-        Sorter s = new Sorter();
-
-        Long[] bigData = r.getUpc14List().toArray(new Long[0]);
-        Long smallData[] = {3221L, 1L, 10L, 9680L, 577L, 9420L, 7L, 5622L, 4793L, 2030L, 3138L, 82L, 2599L, 743L, 4127L};
-
-
-        int dataLength = r.getUpc14List().toArray().length - 1;
-
-        int[] countingSortTest = new int[20];
-        for (int i = 0; i < countingSortTest.length; i++) {
-            countingSortTest[i] = (int) (Math.random() * 10);
+    // Insertion Sort
+    public int insertionSort(int[] data) {
+        int i, j, item, count;
+        // initialize count
+        count = 0;
+        for (i = 1; i < data.length; i++) {
+            // select item to place
+            item = data[i];
+            j = i;
+            while (j > 0 && data[j - 1] > item) {
+                // continue shifting items until correct position is found
+                data[j] = data[j - 1];
+                j--;
+                count++;  // increment shift count
+            }
+            data[j] = item; // place item in correct location
         }
-
-
-
-
-        Long[] testingArray = bigData;
-        //Sort begins
-
-        Long begin = System.currentTimeMillis();
-        s.quickSort(testingArray, 0, dataLength);
-        //s.countingSort(countingSortTest);
-        //s.radixSort(testingArray);
-        Long end = System.currentTimeMillis() - begin;
-        System.out.println("Result: " + Arrays.toString(testingArray));
-        System.out.println(" FINISHED IN : " + end + "ms");
-
-
+        return count;
     }
 
+    //Heap Sort
+    public void heapSort(Long arr[]) {
+        int n = arr.length;
+
+        // Build heap (rearrange array)
+        for (int i = n / 2 - 1; i >= 0; i--)
+            maxHeapify(arr, n, i);
+
+        // One by one extract an element from heap
+        for (int i = n - 1; i > 0; i--) {
+            // Move current root to end (Swapping)
+            long temp = arr[0];
+            arr[0] = arr[i];
+            arr[i] = temp;
+
+            // call max heapify on the reduced heap
+            maxHeapify(arr, i, 0);
+        }
+    }
+
+    void maxHeapify(Long[] arr, int n, int i) {
+        int largest = i; // Initialize largest as root
+        int l = 2 * i + 1; // left = 2*i + 1
+        int r = 2 * i + 2; // right = 2*i + 2
+
+        // If left child is larger than root
+        if (l < n && arr[l] > arr[largest])
+            largest = l;
+
+        // If right child is larger than largest so far
+        if (r < n && arr[r] > arr[largest])
+            largest = r;
+
+        // If largest is not root
+        if (largest != i) {
+            long swap = arr[i];
+            arr[i] = arr[largest];
+            arr[largest] = swap;
+
+            // Recursively heapify the affected sub-tree
+            maxHeapify(arr, n, largest);
+        }
+    }
+
+
+
+
 }
+
+
+
 
 

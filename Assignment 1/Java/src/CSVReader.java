@@ -58,6 +58,7 @@ public class CSVReader {
                 //System.out.println("Group_ID: " + group_ID + " UPC14: " + upc14 + " UPC12: " + upc12 + " Brand: " + brand + " Name: " + name);
             }
         }
+        br.close();
     }
 
     public ArrayList<Long> getUpc14List() {
@@ -76,19 +77,7 @@ public class CSVReader {
         return nameList;
     }
 
-    public Hashtable<Long, String> getProductMap() {
+    public Hashtable<Long, String> getUpc14ProductMap() {
         return productMap;
     }
-
-/*    public static void main(String[] args) throws IOException {
-        CSVReader r = new CSVReader();
-        System.out.println(r.getBrandList());
-
-
-        for (Long key: r.getProductMap().keySet()) {
-            System.out.println("UPC14:" + key + ": NAME: " + r.getProductMap().get(key));
-        }
-
-    }*/
-
 }
