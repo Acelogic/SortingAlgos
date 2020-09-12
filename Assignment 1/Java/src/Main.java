@@ -10,17 +10,17 @@ public class Main {
         Sorter sorter = new Sorter();
 
         Long[] bigData = csvReader.getUpc14List().toArray(new Long[0]);
-        Long smallData[] = {12L, 11L, 13L, 5L, 16L, 7L};
+        Long smallData[] = {12345678901234L, 11L, 13L, 5L, 16L, 7L};
 
         // The Array to be Sorted
-        Long[] arr = bigData;
+        Long[] arr = smallData;
 
 
         //Sort begins
         Long begin = System.currentTimeMillis();
-        sorter.quickSort(arr, 0, arr.length-1 );
-        sorter.radixSort(arr);
-        sorter.heapSort(arr);
+        //sorter.quickSort(arr, 0, arr.length-1 );
+        //sorter.radixSort(arr);
+        //sorter.heapSort(arr);
         Long end = System.currentTimeMillis() - begin;
         System.out.println("Result:  " + Arrays.toString(arr));
 
