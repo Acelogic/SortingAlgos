@@ -1,11 +1,14 @@
 import java.util.*;
 
 /*
-@author  Miguel Cruz (mcruz@mcruz.me)
+@author  Miguel Cruz (mcruz@oswego.edu)
  */
 
 
 public class Sorter {
+
+
+    private String sortingState;
 
     public Sorter() {
 
@@ -14,10 +17,12 @@ public class Sorter {
     // Generic methods makes use of method overloading
     // Quick Sort
     public <T extends Number & Comparable<T>> int quickSort(T[] data, int first, int last) {
+        sortingState = "QuickSort";
         int left, right, count;
         T pivot;
         // initialize count
         count = 0;
+        // breaks out of recursive function for base case
         if (first >= last) {
             return count;
         }
@@ -27,10 +32,12 @@ public class Sorter {
         pivot = data[((first + last) / 2)];
         do {
             // Find a left value in the wrong place  (if data value is less than pivot)
+            //data[right] < pivot
             while (data[left].compareTo(pivot) < 0) {
                 left++;
             }
             // Find a right value in the wrong place (if data value is more than pivot)
+            // data[right] > pivot
             while (data[right].compareTo(pivot) > 0) {
                 right--;
             }
@@ -53,128 +60,67 @@ public class Sorter {
         return count + rCount + lCount;
     }
 
-    //Radix Sort (FIFO)
-    public void radixSort(Long[] data) {
 
-        // Getting Max Value
-        Long currentMax = data[0];
-        for (Long maxCandidate : data) {
-            if (currentMax < maxCandidate) {
-                currentMax = maxCandidate;
-            }
+    // The main function to that sorts arr[] of size n using
+    // Radix Sort
+    public void radixSort(Long arr[], int n) {
+        sortingState = "RadixSort";
+        // Find the maximum number to know number of digits
+        Long max = arr[0];
+        for (int i = 1; i < n; i++) {
+            if (arr[i] > max)
+                max = arr[i];
         }
 
-        int countingSortIterations = currentMax.toString().length();
-
-        Queue<Long>[] buckets = new Queue[10];
-        for (int exp = 0; exp < countingSortIterations; exp++) {
-            for (int i = 0; i < buckets.length; i++) {
-                buckets[i] = new LinkedList<Long>();
-            }
-            int[] placeValList = new int[data.length];
-
-            for (int i = 0; i < data.length; i++) {
-                int singleNumPlaceValue = (int) Math.floor(data[i] / Math.pow(10, exp) % 10);
-
-                placeValList[i] = singleNumPlaceValue;
-                switch (singleNumPlaceValue) {
-                    case 0:
-                        buckets[0].add(data[i]);
-                        break;
-                    case 1:
-                        buckets[1].add(data[i]);
-                        break;
-                    case 2:
-                        buckets[2].add(data[i]);
-                        break;
-                    case 3:
-                        buckets[3].add(data[i]);
-                        break;
-                    case 4:
-                        buckets[4].add(data[i]);
-                        break;
-                    case 5:
-                        buckets[5].add(data[i]);
-                        break;
-                    case 6:
-                        buckets[6].add(data[i]);
-                        break;
-                    case 7:
-                        buckets[7].add(data[i]);
-                        break;
-                    case 8:
-                        buckets[8].add(data[i]);
-                        break;
-                    case 9:
-                        buckets[9].add(data[i]);
-                        break;
-                }
-            }
-
-            // Temporary Space to store passes
-            ArrayList<Long> temp = new ArrayList<>();
-            // Flush Queues onto main data array starting from 0 to 9
-            for (Queue<Long> bucket : buckets) {
-                temp.addAll(bucket);
-            }
-            // Copy results from previous pass and make it new set of data
-            System.arraycopy(temp.toArray(), 0, data, 0, data.length);
-
+        // Do counting sort for every digit. Note that instead
+        // of passing digit number, exp is passed. exp is 10^i
+        // where i is current digit number
+        for (Long exp = 1L; max / exp > 0; exp *= 10) {
+            countSort(arr, n, exp);
+            //System.out.println("========================================================");
+            // System.out.println(Arrays.toString(arr));
         }
-
 
     }
 
-    // Counting Sort
-    public int[] countingSort(int[] data) {
-        int[] counts = new int[data.length]; // Counting Array
+    // A function to do counting sort of arr[] according to
+    // the digit represented by exp (10^n).
+    private void countSort(Long[] arr, int arrSize, Long exp) {
+        Long[] output = new Long[arrSize]; // output array
+        int i;
+        int[] countingArray = new int[10];
+        Arrays.fill(countingArray, 0);
 
-        // Counting occurrences of numbers in array from 0 to n and storing them
-        for (int num : data) {
-            counts[num] = counts[num] + 1;
+        // Store counts of occurrences in countingArray[]
+        for (i = 0; i < arrSize; i++) {
+            // System.out.println("Number: " + arr[i] + "  Exp: " + exp + " Observed Digit: " + ((arr[i] / exp) % 10));
+            countingArray[(int) ((arr[i] / exp) % 10)]++;
         }
 
-        // Builds sorting array
-        ArrayList<Integer> sorted = new ArrayList<>();
-        // Whole Number Pointer Starts at zero
-        int wholeNumberPointer = 0;
-        for (int wholeNumberPlace : counts) {
-            // Iterates and applies the number of whole numbers counted to the array
-            for (int i = 0; i < wholeNumberPlace; i++) {
-                sorted.add(wholeNumberPointer);
-            }
-            // Increment Whole Number Pointer
-            wholeNumberPointer++;
+        // Change countingArray[i] so that countingArray[i] now contains
+        // actual position of this digit in output[]
+        for (i = 1; i < 10; i++) {
+            countingArray[i] += countingArray[i - 1];
+
+        }
+        // Build the output array
+        for (i = arrSize - 1; i >= 0; i--) {
+            output[countingArray[(int) ((arr[i] / exp) % 10)] - 1] = arr[i];
+            countingArray[(int) ((arr[i] / exp) % 10)]--;
+
         }
 
-        // Converts Integers in arraylist to primitive types and copies the sorted data to the original data array
-        System.arraycopy(sorted.stream().mapToInt(Integer::valueOf).toArray(), 0, data, 0, data.length);
-        return data;
-
+        // Copy the output array to arr[], so that arr[] now
+        // contains sorted numbers according to current digit
+        for (i = 0; i < arrSize; i++) {
+            arr[i] = output[i];
+        }
     }
 
-    // Insertion Sort
-    public int insertionSort(int[] data) {
-        int i, j, item, count;
-        // initialize count
-        count = 0;
-        for (i = 1; i < data.length; i++) {
-            // select item to place
-            item = data[i];
-            j = i;
-            while (j > 0 && data[j - 1] > item) {
-                // continue shifting items until correct position is found
-                data[j] = data[j - 1];
-                j--;
-                count++;  // increment shift count
-            }
-            data[j] = item; // place item in correct location
-        }
-        return count;
-    }
 
     //Heap Sort
     public void heapSort(Long arr[]) {
+        sortingState = "HeapSort";
         int n = arr.length;
 
         // Build heap (rearrange array)
@@ -193,7 +139,7 @@ public class Sorter {
         }
     }
 
-    void maxHeapify(Long[] arr, int n, int i) {
+    private void maxHeapify(Long[] arr, int n, int i) {
         int largest = i; // Initialize largest as root
         int l = 2 * i + 1; // left = 2*i + 1
         int r = 2 * i + 2; // right = 2*i + 2
@@ -217,9 +163,10 @@ public class Sorter {
         }
     }
 
-
-
-
+    @Override
+    public String toString() {
+        return sortingState;
+    }
 }
 
 
