@@ -92,7 +92,7 @@ public class Main {
         CSVReader csvReader = new CSVReader();
         Sorter sorter = new Sorter();
 
-        Long[] bigData = csvReader.getUpc14List().toArray(new Long[0]);
+        Long[] bigData = csvReader.getDateList().toArray(new Long[0]);
 
         // The Array to be Sorted
         Long[] arr = bigData.clone();
